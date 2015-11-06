@@ -1,0 +1,6 @@
+/presentation/bin
+/presentation/obj
+*.suo
+*.psess
+*.vsp
+*.vspx
