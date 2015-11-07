@@ -13,23 +13,22 @@ namespace Presentation.Slides
     {
         public static Vector3 TitleColor = new Vector3(95 / 255f, 203 / 255f, 239 / 255f);
         public static Vector3 SubtitleColor = new Vector3(0.5f, 0.5f, 0.5f);
-        public static Vector3 TextColor = new Vector3(0, 0, 0);
+        public static Vector3 TextColor = new Vector3(0.25f, 0.25f, 0.25f);
 
-        private static VAO backgroundQuad;
-        private static Texture backgroundTexture;
-
-        public static BMFont Font24, Font32, Font48, Font54, Font72;
+        public static VAO BackgroundQuad;
+        public static Texture BackgroundTexture;
+        public static Texture BulletTexture;
+        public static VAO BulletQuad;
 
         public static void Init()
         {
-            Font24 = BMFont.LoadFont("media/font24.fnt");
-            Font32 = BMFont.LoadFont("media/font32.fnt");
-            Font48 = BMFont.LoadFont("media/font48.fnt");
-            Font54 = BMFont.LoadFont("media/font54.fnt");
-            Font72 = BMFont.LoadFont("media/font72.fnt");
+            BackgroundQuad = Utilities.CreateQuad(Shaders.SimpleTexturedShader);
+            BackgroundTexture = new Texture("media/background.png");
+            BulletTexture = new Texture("media/bullet.png");
+            BulletQuad = Utilities.CreateQuad(Shaders.SimpleTexturedShader, Vector2.Zero, new Vector2(24, 24));
 
-            backgroundQuad = Utilities.CreateQuad(Shaders.SimpleTexturedShader);
-            backgroundTexture = new Texture("media/background.png");
+            Shaders.FontShader.Use();
+            Shaders.FontShader["viewMatrix"].SetValue(Matrix4.Identity);
         }
 
         public static void DrawBackground()
@@ -38,17 +37,18 @@ namespace Presentation.Slides
             Shaders.SimpleTexturedShader["projectionMatrix"].SetValue(Matrix4.Identity);
             Shaders.SimpleTexturedShader["viewMatrix"].SetValue(Matrix4.Identity);
             Shaders.SimpleTexturedShader["modelMatrix"].SetValue(Matrix4.Identity);
-            Gl.BindTexture(backgroundTexture);
-            backgroundQuad.Draw();
+            Gl.BindTexture(BackgroundTexture);
+            BackgroundQuad.Draw();
         }
 
-        public static void DrawString(BMFont font, VAO<Vector3, Vector2> text, Vector2 position, Vector3 color)
+        public static void DrawBullet(Matrix4 modelMatrix)
         {
-            Shaders.FontShader.Use();
-            Shaders.FontShader["position"].SetValue(position);
-            Shaders.FontShader["color"].SetValue(color);
-            Gl.BindTexture(font.FontTexture);
-            text.Draw();
+            Shaders.SimpleTexturedShader.Use();
+            Shaders.SimpleTexturedShader["projectionMatrix"].SetValue(Program.uiProjectionMatrix);
+            Shaders.SimpleTexturedShader["viewMatrix"].SetValue(Matrix4.Identity);
+            Shaders.SimpleTexturedShader["modelMatrix"].SetValue(modelMatrix);
+            Gl.BindTexture(BulletTexture);
+            BulletQuad.Draw();
         }
     }
 }

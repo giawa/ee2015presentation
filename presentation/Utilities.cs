@@ -223,25 +223,20 @@ namespace Presentation
 
         /// <summary>
         /// Create a basic quad by storing two triangles into a VAO.
-        /// This quad includes normal co-ordinates.
+        /// This quad includes uv co-ordinates.
         /// </summary>
         /// <param name="program">The ShaderProgram assigned to this quad.</param>
         /// <param name="location">The location of the VAO (assigned to the vertices).</param>
         /// <param name="size">The size of the VAO (assigned to the vertices).</param>
         /// <returns>The VAO object representing this quad.</returns>
-        public static VAO CreateQuad(ShaderProgram program, Vector2 location, Vector2 size, Vector3 color)
+        public static VAO CreateQuad(ShaderProgram program, Vector2 location, Vector2 size)
         {
-            Vector3[] vertices = new Vector3[] { new Vector3(location.x, location.y, 0), new Vector3(location.x + size.x, location.y, 0),
-                new Vector3(location.x + size.x, location.y + size.y, 0), new Vector3(location.x, location.y + size.y, 0) };
-            for (int i = 0; i < vertices.Length; i++) vertices[i] += color;
-            int[] indices = new int[] { 0, 1, 2, 3 };//new int[] { 0, 1, 3, 1, 3, 2 };
+            VBO<Vector3> vertices = new VBO<Vector3>(new Vector3[] { new Vector3(location.x, location.y, 0), new Vector3(location.x + size.x, location.y, 0),
+                new Vector3(location.x + size.x, location.y + size.y, 0), new Vector3(location.x, location.y + size.y, 0) });
+            VBO<Vector2> uvs = new VBO<Vector2>(new Vector2[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) });
+            VBO<int> indices = new VBO<int>(new int[] { 0, 1, 3, 1, 2, 3 }, BufferTarget.ElementArrayBuffer);
 
-            Vector3[] normals = new Vector3[vertices.Length];
-            for (int i = 0; i < normals.Length; i++) normals[i] = new Vector3(0, 255, 0);
-
-            var vao = new VAO(program, new VBO<Vector3>(vertices), new VBO<Vector3>(normals), new VBO<int>(indices, BufferTarget.ElementArrayBuffer, BufferUsageHint.StaticDraw));
-            vao.DrawMode = BeginMode.Quads;
-            return vao;
+            return new VAO(program, vertices, uvs, indices);
         }
 
         /// <summary>

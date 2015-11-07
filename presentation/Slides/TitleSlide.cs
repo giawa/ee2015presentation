@@ -6,21 +6,24 @@ namespace Presentation.Slides
 {
     public class TitleSlide : ISlide
     {
-        private VAO<Vector3, Vector2> title;
-        private VAO<Vector3, Vector2> subtitle;
+        private Text title;
+        private Text subtitle;
 
         public TitleSlide(string titleText, string subtitleText)
         {
-            title = Common.Font72.CreateString(Shaders.FontShader, titleText, BMFont.Justification.Right);
-            subtitle = Common.Font32.CreateString(Shaders.FontShader, subtitleText, BMFont.Justification.Right);
+            title = new Text(Text.FontSize._72pt, titleText, Common.TitleColor, BMFont.Justification.Right);
+            subtitle = new Text(Text.FontSize._32pt, subtitleText, Common.SubtitleColor, BMFont.Justification.Right);
+
+            title.ModelMatrix = Matrix4.CreateTranslation(new Vector3(980, 360, 0));
+            subtitle.ModelMatrix = Matrix4.CreateTranslation(new Vector3(980, 320, 0));
         }
 
         public void Draw()
         {
             Common.DrawBackground();
 
-            Common.DrawString(Common.Font72, title, new Vector2(980, 360), Common.TitleColor);
-            Common.DrawString(Common.Font32, subtitle, new Vector2(980, 320), Common.SubtitleColor);
+            title.Draw();
+            subtitle.Draw();
         }
     }
 }

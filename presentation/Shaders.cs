@@ -172,8 +172,9 @@ void main(void)
         private static string FontVertexSource = @"
 #version 140
 
-uniform vec2 position;
-uniform mat4 uiProjectionMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
 
 in vec3 in_position;
 in vec2 in_uv;
@@ -183,7 +184,7 @@ out vec2 uv;
 void main(void)
 {
   uv = in_uv;
-  gl_Position = uiProjectionMatrix * vec4(in_position.x + position.x, in_position.y + position.y, 0, 1);
+  gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(in_position.x, in_position.y, 0, 1);
 }";
 
         private static string FontFragmentSource = @"

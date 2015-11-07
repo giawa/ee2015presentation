@@ -48,7 +48,7 @@ namespace Presentation
             }
         }
 
-        private static Matrix4 uiProjectionMatrix = Matrix4.Identity;
+        public static Matrix4 uiProjectionMatrix = Matrix4.Identity;
 
         public static void OnReshape()
         {
@@ -56,7 +56,9 @@ namespace Presentation
 
             // the uiProjectMatrix need only be set once (unless we reshape)
             Shaders.FontShader.Use();
-            Shaders.FontShader["uiProjectionMatrix"].SetValue(uiProjectionMatrix);
+            Shaders.FontShader["projectionMatrix"].SetValue(uiProjectionMatrix);
+
+            Shaders.SimpleTexturedShader.Use();
         }
 
         private static float dt = 0;
@@ -91,7 +93,19 @@ namespace Presentation
             }
             else if (slideNumber == 1)
             {
-                currentSlide = new Slides.TitleSlide("", "");
+                currentSlide = new Slides.TitleAndBullets("Sample Bullet Point", new string[] { "Point 1", "More information about something.", "And some more stuff!" });
+            }
+            else if (slideNumber == 2)
+            {
+                currentSlide = new Slides.TitleAndImage("Semiconductor Image", "media/slide3.jpg");
+            }
+            else if (slideNumber == 3)
+            {
+                currentSlide = new Slides.ImageAndText("Bullets on Right", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
+            }
+            else if (slideNumber == 4)
+            {
+                currentSlide = new Slides.ImageAndText("Image and Bullets", "media/slide5.jpg", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
             }
         }
 
@@ -103,7 +117,7 @@ namespace Presentation
         {
             t += dt;
 
-            if (slideNumber == 1)
+            /*if (slideNumber == 1)
             {
                 if (sineWave == null)
                 {
@@ -130,7 +144,7 @@ namespace Presentation
                 Shaders.SineShader["a"].SetValue(t % 10);
                 Gl.LineWidth(2f);
                 sineWave.Draw();
-            }
+            }*/
         }
 
         public static void NextSlide()
