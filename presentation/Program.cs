@@ -58,7 +58,8 @@ namespace Presentation
             Shaders.FontShader.Use();
             Shaders.FontShader["projectionMatrix"].SetValue(uiProjectionMatrix);
 
-            Shaders.SimpleTexturedShader.Use();
+            Shaders.SimpleColoredShader.Use();
+            Shaders.SimpleColoredShader["projectionMatrix"].SetValue(uiProjectionMatrix);
         }
 
         private static float dt = 0;
@@ -127,15 +128,17 @@ namespace Presentation
         {
             t += dt;
 
-            /*if (slideNumber == 1)
+            if (slideNumber == 3)
             {
+                Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+
                 if (sineWave == null)
                 {
-                    Vector3[] sineArray = new Vector3[700];
+                    Vector3[] sineArray = new Vector3[441];
                     int[] elementArray = new int[sineArray.Length];
                     for (int i = 0; i < sineArray.Length; i++)
                     {
-                        sineArray[i] = new Vector3(200 + i, 300, 0);
+                        sineArray[i] = new Vector3(72 + i, 288, 0);
                         elementArray[i] = i;
                     }
                     VBO<Vector3> sineListVBO = new VBO<Vector3>(sineArray);
@@ -148,13 +151,13 @@ namespace Presentation
                 Shaders.SineShader["projectionMatrix"].SetValue(uiProjectionMatrix);
                 Shaders.SineShader["viewMatrix"].SetValue(Matrix4.Identity);
                 Shaders.SineShader["modelMatrix"].SetValue(Matrix4.Identity);
-                Shaders.SineShader["color"].SetValue(Slides.Common.SubtitleColor);
+                Shaders.SineShader["color"].SetValue(Slides.Common.TitleColor);
                 Shaders.SineShader["f"].SetValue(0.2f);
                 Shaders.SineShader["t"].SetValue(t * 20);
                 Shaders.SineShader["a"].SetValue(t % 10);
                 Gl.LineWidth(2f);
                 sineWave.Draw();
-            }*/
+            }
         }
 
         public static void NextSlide()
