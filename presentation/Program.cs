@@ -89,6 +89,7 @@ namespace Presentation
         public static void SetSlide(int slide)
         {
             slideNumber = slide;
+            t = 0;
 
             if (slideList[slideNumber] != null)
             {
@@ -138,7 +139,7 @@ namespace Presentation
                     int[] elementArray = new int[sineArray.Length];
                     for (int i = 0; i < sineArray.Length; i++)
                     {
-                        sineArray[i] = new Vector3(72 + i, 288, 0);
+                        sineArray[i] = new Vector3(i - 441 / 2f, 288, 0);
                         elementArray[i] = i;
                     }
                     VBO<Vector3> sineListVBO = new VBO<Vector3>(sineArray);
@@ -150,11 +151,10 @@ namespace Presentation
                 Shaders.SineShader.Use();
                 Shaders.SineShader["projectionMatrix"].SetValue(uiProjectionMatrix);
                 Shaders.SineShader["viewMatrix"].SetValue(Matrix4.Identity);
-                Shaders.SineShader["modelMatrix"].SetValue(Matrix4.Identity);
+                Shaders.SineShader["modelMatrix"].SetValue(Matrix4.CreateTranslation(new Vector3(72 + 441 / 2f, 0, 0)));
                 Shaders.SineShader["color"].SetValue(Slides.Common.TitleColor);
-                Shaders.SineShader["f"].SetValue(0.2f);
-                Shaders.SineShader["t"].SetValue(t * 20);
-                Shaders.SineShader["a"].SetValue(t % 10);
+                Shaders.SineShader["f"].SetValue((float)Math.Pow(1.1f, t * 0.5 + 1) - 1.1f);
+                Shaders.SineShader["a"].SetValue(5f);
                 Gl.LineWidth(2f);
                 sineWave.Draw();
             }
