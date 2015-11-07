@@ -1,7 +1,7 @@
 # ee2015presentation
-This is the code for a presentation that I giving at my local University.  The first presentation was made in 2014, and will be available on youtube shortly.  This presentation is meant to be an interactive demonstration of some of audio, digital and DSP course work.
+This is the code for a presentation that I am giving at my local University.  This presentation is meant to be an interactive demonstration of some audio, digital and DSP course work.
 
-This project emulates many types of PowerPoint slides, and could be re-themed very easily.  Checking the Slides/Common.cs codebase for all of the common elements used by the theme.
+This project emulates many types of PowerPoint slides, and could be re-themed very easily.  Check the presentation/Slides/Common.cs code for all of the common elements used by the theme.
 
 ## License
 Check the included [LICENSE.md](https://github.com/giawa/ee2015presentation/blob/master/LICENSE.md) file for the license associated with this code.  This license covers my work (the code, text within the code and Visual Studio solution) only.  See 'use of copyrighted works' for more information.
