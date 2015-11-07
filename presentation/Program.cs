@@ -12,18 +12,6 @@ namespace Presentation
 
         public static bool RunPresentation = true;
 
-        public static BMFont Font24, Font32, Font48, Font54, Font72;
-
-        private static VAO<Vector3, Vector2> title;
-        private static VAO<Vector3, Vector2> subtitle;
-
-        private static VAO backgroundQuad;
-        private static Texture backgroundTexture;
-
-        private static Vector3 titleColor = new Vector3(95 / 255f, 203 / 255f, 239 / 255f);
-        private static Vector3 subtitleColor = new Vector3(0.5f, 0.5f, 0.5f);
-        private static Vector3 textColor = new Vector3(0, 0, 0);
-
         static void Main(string[] args)
         {
             // create a window using SDL and create a valid OpenGL context
@@ -41,18 +29,14 @@ namespace Presentation
             // initialize the shaders that we require
             Shaders.InitShaders(Shaders.ShaderVersion.GLSL120);
 
-            Font24 = BMFont.LoadFont("media/font24.fnt");
-            Font32 = BMFont.LoadFont("media/font32.fnt");
-            Font48 = BMFont.LoadFont("media/font48.fnt");
-            Font54 = BMFont.LoadFont("media/font54.fnt");
-            Font72 = BMFont.LoadFont("media/font72.fnt");
+            // initialize commonly used object in slides such as fonts, background textures, etc
+            Slides.Common.Init();
 
-            title = Font72.CreateString(Shaders.FontShader, "2015 Presentation", BMFont.Justification.Right);
-            subtitle = Font32.CreateString(Shaders.FontShader, "Chatting about cool things in electrical engineering!", BMFont.Justification.Right);
-            backgroundQuad = Utilities.CreateQuad(Shaders.SimpleTexturedShader);
-            backgroundTexture = new Texture("media/background.png");
-
+            // force a reshape to generate the UI projection matrix
             Window.OnReshape(Program.Width, Program.Height);
+
+            // set to slide 0
+            SetSlide(0);
 
             // the main game loop
             while (RunPresentation)
@@ -77,38 +61,38 @@ namespace Presentation
             Gl.Viewport(0, 0, Program.Width, Program.Height);
             Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            Shaders.SimpleTexturedShader.Use();
-            Shaders.SimpleTexturedShader["projectionMatrix"].SetValue(Matrix4.Identity);
-            Shaders.SimpleTexturedShader["viewMatrix"].SetValue(Matrix4.Identity);
-            Shaders.SimpleTexturedShader["modelMatrix"].SetValue(Matrix4.Identity);
-            Gl.BindTexture(backgroundTexture);
-            backgroundQuad.Draw();
-
-            DrawString(Font72, title, new Vector2(980, 360), titleColor);
-            DrawString(Font32, subtitle, new Vector2(980, 320), subtitleColor);
+            // render the current slide if it exists
+            if (currentSlide != null) currentSlide.Draw();
 
             // swap the buffers
             Window.SwapBuffers();
         }
 
-        public static void DrawString(BMFont font, VAO<Vector3, Vector2> text, Vector2 position, Vector3 color)
+        private static int slideNumber = 0;
+        private static Slides.ISlide currentSlide;
+
+        public static void SetSlide(int slide)
         {
-            Shaders.FontShader.Use();
-            //Shaders.FontShader["uiProjectionMatrix"].SetValue(uiProjectionMatrix);
-            Shaders.FontShader["position"].SetValue(position);
-            Shaders.FontShader["color"].SetValue(color);
-            Gl.BindTexture(font.FontTexture);
-            text.Draw();
+            if (slideNumber == 0)
+            {
+                currentSlide = new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics.");
+            }
+            else if (slideNumber == 1)
+            {
+                currentSlide = new Slides.TitleSlide("Slide 2", "Testing navigation.");
+            }
         }
 
         public static void NextSlide()
         {
-            Console.WriteLine("Next slide!");
+            slideNumber++;
+            SetSlide(slideNumber);
         }
 
         public static void PrevSlide()
         {
-            Console.WriteLine("Prev slide!");
+            slideNumber = Math.Max(0, slideNumber - 1);
+            SetSlide(slideNumber);
         }
     }
 }

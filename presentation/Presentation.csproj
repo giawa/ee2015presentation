@@ -46,6 +46,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shaders.cs" />
+    <Compile Include="Slides\Common.cs" />
+    <Compile Include="Slides\TitleSlide.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>
