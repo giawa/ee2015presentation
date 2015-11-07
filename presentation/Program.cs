@@ -83,30 +83,40 @@ namespace Presentation
         private static int slideNumber = 0;
         private static Slides.ISlide currentSlide;
 
+        private static Slides.ISlide[] slideList = new Slides.ISlide[256];
+
         public static void SetSlide(int slide)
         {
             slideNumber = slide;
 
+            if (slideList[slideNumber] != null)
+            {
+                currentSlide = slideList[slideNumber];
+                return;
+            }
+
             if (slideNumber == 0)
             {
-                currentSlide = new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics.");
+                slideList[slideNumber] = new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics.");
             }
             else if (slideNumber == 1)
             {
-                currentSlide = new Slides.TitleAndBullets("Sample Bullet Point", new string[] { "Point 1", "More information about something.", "And some more stuff!" });
+                slideList[slideNumber] = new Slides.TitleAndBullets("Sample Bullet Point", new string[] { "Point 1", "More information about something.", "And some more stuff!" });
             }
             else if (slideNumber == 2)
             {
-                currentSlide = new Slides.TitleAndImage("Semiconductor Image", "media/slide3.jpg");
+                slideList[slideNumber] = new Slides.TitleAndImage("Semiconductor Image", "media/slide3.jpg");
             }
             else if (slideNumber == 3)
             {
-                currentSlide = new Slides.ImageAndText("Bullets on Right", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
+                slideList[slideNumber] = new Slides.ImageAndText("Bullets on Right", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
             }
             else if (slideNumber == 4)
             {
-                currentSlide = new Slides.ImageAndText("Image and Bullets", "media/slide5.jpg", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
+                slideList[slideNumber] = new Slides.ImageAndText("Image and Bullets", "media/slide5.jpg", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
             }
+
+            currentSlide = slideList[slideNumber];
         }
 
         private static VAO<Vector3> sineWave;
@@ -149,7 +159,7 @@ namespace Presentation
 
         public static void NextSlide()
         {
-            SetSlide(slideNumber + 1);
+            SetSlide(Math.Min(slideList.Length - 1, slideNumber + 1));
         }
 
         public static void PrevSlide()
