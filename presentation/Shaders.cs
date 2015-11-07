@@ -12,6 +12,7 @@ namespace Presentation
         public static ShaderProgram SimpleColoredShader;
         public static ShaderProgram FontShader;
         public static ShaderProgram Font3DShader;
+        public static ShaderProgram SineShader;
 
         public enum ShaderVersion
         {
@@ -29,6 +30,7 @@ namespace Presentation
             {
                 SimpleTexturedShader = InitShader(SimpleTexturedVertexShader, SimpleTexturedFragmentShader);
                 SimpleColoredShader = InitShader(SimpleColoredVertexShader, SimpleColoredFragmentShader);
+                SineShader = InitShader(SineVertexShader, SimpleColoredFragmentShader);
 
                 FontShader = InitShader(FontVertexSource, FontFragmentSource);
                 Font3DShader = InitShader(Font3DVertexSource, FontFragmentSource);
@@ -196,6 +198,25 @@ void main(void)
 {
   vec4 t = texture2D(active_texture, uv);
   gl_FragColor = vec4(color, t.r);
+}";
+
+        private static string SineVertexShader = @"
+#version 140
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
+
+attribute vec3 in_position;
+
+uniform float f;
+uniform float t;
+uniform float a;
+
+void main(void)
+{
+   vec3 position = vec3(in_position.x, 20 * a * sin(in_position.x * f + t) + in_position.y, 0);
+   gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1);
 }";
         #endregion
     }
