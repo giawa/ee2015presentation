@@ -96,29 +96,30 @@ namespace Presentation
         private static void BuildSlides()
         {
             // first slide is already built
-            //slideList.Add(new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics."));
-            slideList.Add(new Slides.TitleAndBullets("Sample Bullet Point", new string[] { "Point 1", "More information about something.", "And some more stuff!" }));
-            slideList.Add(new Slides.TitleAndImage("Semiconductor Image", "media/slide3.jpg"));
-            slideList.Add(new Slides.ImageAndText("Bullets on Right", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" }));
-            slideList.Add(new Slides.ImageAndText("Image and Bullets", "media/slide5.jpg", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" }));
 
-            slideList[3].CustomDraw = () =>
-                {
-                    Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+            // introduction to presentation
+            slideList.Add(new Slides.TitleAndBullets("About Me", new string[] { "Graduated 2010 in Electrical Engineering", "Working (since 2006) in the semiconductor industry", "Love hacking in C#, C and OpenGL", "GitHub: https://www.github.com/giawa", "Twitter: @giawadev" }));
+            slideList.Add(new Slides.TwoImages("Exploration using Senses", "media/slide2_1.jpg", "media/slide2_2.jpg"));
+            slideList.Add(new Slides.ImageAndText("Exploration using Senses", "media/slide3.jpg", new string[] { "Microphone/ADC for Analog->Digital" }));
+            slideList.Add(new Slides.ImageAndText("Exploration using Senses", "media/slide4.jpg", new string[] { "Microphone/ADC for Analog->Digital", "DAC/Speaker for Digital->Analog" }));
+            slideList.Add(new Slides.ImageAndText("Exploration using Senses", new string[] { "Microphone/ADC for Analog->Digital", "DAC/Speaker for Digital->Analog", "How is audio stored in a computer?" }));
+            slideList[slideList.Count - 1].CustomDraw = Slide5Render;
+            slideList.Add(new Slides.ImageAndText("Exploration using Senses", new string[] { "Microphone/ADC for Analog->Digital", "DAC/Speaker for Digital->Analog", "How is audio stored in a computer?", "As individual samples!" }));
+            slideList[slideList.Count - 1].CustomDraw = Slide6Render;
+            slideList.Add(new Slides.ImageAndText("Exploration using Senses", new string[] { "Microphone/ADC for Analog->Digital", "DAC/Speaker for Digital->Analog", "How is audio stored in a computer?", "As individual samples!", "How do we sample?" }));
+            slideList[slideList.Count - 1].CustomDraw = Slide6Render;
 
-                    float[] sine = new float[882];
-                    for (int i = 0; i < 882; i++)
-                        sine[i] = (float)(0.5 * Math.Sin(i * 0.1f * t));
-
-                    Slides.Common.DrawFFTLeft(sine);
-                    Slides.Common.DrawPlotLeft(sine, Slides.Common.TitleColor);
-                };
+            // nyquist sampling criteria
+            slideList.Add(new Slides.TitleAndImage("Sampling Theorem"));
+            slideList[slideList.Count - 1].CustomDraw = Slide8Render;
         }
 
         public static void SetSlide(int slide)
         {
+            if ((slide == 5 && slideNumber == 6) || (slide == 7 && slideNumber == 6) || slide == 6) ;
+            else t = 0;
+
             slideNumber = slide;
-            t = 0;
 
             if (slideList[slideNumber] != null) currentSlide = slideList[slideNumber];
             else currentSlide = null;
@@ -133,5 +134,89 @@ namespace Presentation
         {
             SetSlide(Math.Max(0, slideNumber - 1));
         }
+
+        #region Slide Rendering
+        private static void Slide5Render()
+        {
+            float f;
+            float time = (t % 10);
+            if (time < 5) f = 0.02f + 0.1f * CubicEaseInOut(time, 0, 1, 5);
+            else f = 0.12f - 0.1f * CubicEaseInOut(time - 5, 0, 1, 5);
+
+            float[] sine = new float[441];
+            for (int i = 0; i < sine.Length; i++)
+                sine[i] = 0.5f * (float)Math.Sin((i - 441 / 2) * f);
+
+            Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+            Slides.Common.DrawPlotLeft(sine, Slides.Common.TitleColor);
+        }
+
+        private static void Slide6Render()
+        {
+            float f;
+            float time = (t % 10);
+            if (time < 5) f = 0.02f + 0.1f * CubicEaseInOut(time, 0, 1, 5);
+            else f = 0.12f - 0.1f * CubicEaseInOut(time - 5, 0, 1, 5);
+
+            float[] sine = new float[441];
+            for (int i = 0; i < sine.Length; i++)
+                sine[i] = 0.5f * (float)Math.Sin((i - 441 / 2) * f);
+
+            Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+            Slides.Common.DrawPlotLeft(sine, Slides.Common.TitleColor);
+
+            float[] samples = new float[441];
+            for (int i = 0; i < sine.Length; i++)
+            {
+                if ((i % 10) == 0) samples[i] = sine[i];
+            }
+
+            Slides.Common.DrawPlotLeft(samples, new Vector3(1, 0, 0));
+        }
+
+        private static Text frequencyText;
+
+        private static void Slide8Render()
+        {
+            if (frequencyText == null) frequencyText = new Text(Text.FontSize._24pt, "0Hz @ 1000Hz", Slides.Common.TextColor);
+
+            float f = t * 0.05f;
+            frequencyText.String = string.Format("{0:0.0}Hz @ 1000Hz", f / Math.PI * 5000);
+
+            float[] sine = new float[441];
+            for (int i = 0; i < sine.Length; i++)
+                sine[i] = 0.5f * (float)Math.Sin((i - 441 / 2) * f);
+
+            Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+            Slides.Common.DrawPlotLeft(sine, Slides.Common.TitleColor);
+
+            float[] samples = new float[441];
+            for (int i = 0; i < sine.Length; i++)
+            {
+                samples[i] = sine[(int)(i / 10) * 10];
+            }
+
+            FilterTools.BiQuad lpf = new FilterTools.BiQuad(2205, 0.707, 44100, 0, FilterTools.BiQuad.Type.LPF);
+            lpf.Child = (FilterTools.BiQuad)lpf.Clone();
+
+            float[] filter = new float[441];
+            lpf.Load(samples[0]);
+            for (int i = 0; i < filter.Length; i++) filter[i] = (float)lpf.GetOutput(samples[i]);
+
+            Slides.Common.DrawPlotLeft(samples, new Vector3(1, 0, 0));
+            Slides.Common.DrawPlotLeft(filter, new Vector3(0, 1, 0));
+
+            frequencyText.ModelMatrix = Matrix4.CreateTranslation(new Vector3(70, 500, 0));
+            frequencyText.Draw();
+        }
+
+        private static float CubicEaseInOut(float t, float b, float c, float d)
+        {
+            if ((t /= d / 2) < 1)
+                return c / 2 * t * t * t + b;
+
+            return c / 2 * ((t -= 2) * t * t + 2) + b;
+        }
+        #endregion
     }
 }

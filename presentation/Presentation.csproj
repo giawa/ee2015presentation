@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="FilterTools\Biquad.cs" />
     <Compile Include="FilterTools\FFT.cs" />
+    <Compile Include="FilterTools\FIR.cs" />
     <Compile Include="FilterTools\FrequencySweep.cs" />
     <Compile Include="FilterTools\WindowFunction.cs" />
     <Compile Include="Font.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Slides\TitleAndBullets.cs" />
     <Compile Include="Slides\TitleAndImage.cs" />
     <Compile Include="Slides\TitleSlide.cs" />
+    <Compile Include="Slides\TwoImages.cs" />
     <Compile Include="Text.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="Utilities.cs" />

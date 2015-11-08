@@ -36,19 +36,47 @@ namespace Presentation
         public Matrix4 ModelMatrix { get; set; }
 
         public Vector3 Color { get; set; }
+
+        public string String
+        {
+            get { return text; }
+            set
+            {
+                // do not cause the text to update if it is the same
+                if (text == value || value == null) return;
+
+                if (text != null && text.Length == value.Length)
+                {
+                    font.CreateString(VAO, value, Justification);
+                }
+                else
+                {
+                    if (this.VAO != null) this.VAO.Dispose();
+                    this.VAO = font.CreateString(Shaders.FontShader, value, Justification);
+                    this.VAO.DisposeChildren = true;
+                }
+
+                text = value;
+            }
+        }
+
+        public BMFont.Justification Justification { get; private set; }
         #endregion
 
         #region Private Fields
         private BMFont font;
 
         private VAO<Vector3, Vector2> VAO;
+
+        private string text;
         #endregion
 
         #region Constructor
         public Text(FontSize size, string text, Vector3 color, BMFont.Justification justification = BMFont.Justification.Left)
         {
+            this.Justification = justification;
             this.font = FontFromSize(size);
-            this.VAO = font.CreateString(Shaders.FontShader, text, justification);
+            this.String = text;
             this.Color = color;
         }
         #endregion
