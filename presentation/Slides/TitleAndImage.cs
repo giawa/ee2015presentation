@@ -4,7 +4,7 @@ using OpenGL;
 
 namespace Presentation.Slides
 {
-    public class TitleAndImage : ISlide
+    public class TitleAndImage : Slide
     {
         private Text title;
         private Texture image;
@@ -25,7 +25,7 @@ namespace Presentation.Slides
             imageModelMatrix = Matrix4.CreateTranslation(new Vector3(72, 720 - 227 - 410, 0));
         }
 
-        public void Draw()
+        public override void Draw()
         {
             Common.DrawBackground();
 
@@ -40,6 +40,8 @@ namespace Presentation.Slides
                 Gl.BindTexture(image);
                 imageVAO.Draw();
             }
+
+            base.Draw();
         }
     }
 }

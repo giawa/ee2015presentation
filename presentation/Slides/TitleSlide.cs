@@ -4,7 +4,7 @@ using OpenGL;
 
 namespace Presentation.Slides
 {
-    public class TitleSlide : ISlide
+    public class TitleSlide : Slide
     {
         private Text title;
         private Text subtitle;
@@ -18,12 +18,14 @@ namespace Presentation.Slides
             subtitle.ModelMatrix = Matrix4.CreateTranslation(new Vector3(980, 320, 0));
         }
 
-        public void Draw()
+        public override void Draw()
         {
             Common.DrawBackground();
 
             title.Draw();
             subtitle.Draw();
+
+            base.Draw();
         }
     }
 }

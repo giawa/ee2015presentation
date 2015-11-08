@@ -4,7 +4,7 @@ using OpenGL;
 
 namespace Presentation.Slides
 {
-    public class ImageAndText : ISlide
+    public class ImageAndText : Slide
     {
         private Text title;
         private Texture image;
@@ -33,7 +33,7 @@ namespace Presentation.Slides
             }
         }
 
-        public void Draw()
+        public override void Draw()
         {
             Common.DrawBackground();
 
@@ -54,6 +54,8 @@ namespace Presentation.Slides
                 Common.DrawBullet(Matrix4.CreateTranslation(new Vector3(580 - 30, 720 - 260 - i * 60, 0)));
                 bullets[i].Draw();
             }
+
+            base.Draw();
         }
     }
 }

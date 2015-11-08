@@ -4,9 +4,14 @@ using OpenGL;
 
 namespace Presentation.Slides
 {
-    public interface ISlide
+    public abstract class Slide
     {
-        void Draw();
+        public Action CustomDraw { get; set; }
+
+        public virtual void Draw()
+        {
+            if (CustomDraw != null) CustomDraw();
+        }
     }
 
     public static class Common
@@ -79,6 +84,35 @@ namespace Presentation.Slides
             DrawBox(modelMatrix, SubtitleColor);
             Shaders.SimpleColoredShader["color"].SetValue(TextColor);
             CrosshairVAO.Draw();
+        }
+
+        private static VAO<Vector3> sineLeft;
+
+        public static void DrawSineLeft(float f, float a = 100f, float t = 0f)
+        {
+            if (sineLeft == null)
+            {
+                Vector3[] sineArray = new Vector3[441];
+                int[] elementArray = new int[sineArray.Length];
+                for (int i = 0; i < sineArray.Length; i++)
+                {
+                    sineArray[i] = new Vector3(i - 441 / 2f, 288, 0);
+                    elementArray[i] = i;
+                }
+                VBO<Vector3> sineListVBO = new VBO<Vector3>(sineArray);
+                VBO<int> elementListVBO = new VBO<int>(elementArray, BufferTarget.ElementArrayBuffer);
+                sineLeft = new VAO<Vector3>(Shaders.SineShader, sineListVBO, "in_position", elementListVBO);
+                sineLeft.DrawMode = BeginMode.LineStrip;
+            }
+
+            Shaders.SineShader.Use();
+            Shaders.SineShader["projectionMatrix"].SetValue(Program.uiProjectionMatrix);
+            Shaders.SineShader["viewMatrix"].SetValue(Matrix4.Identity);
+            Shaders.SineShader["modelMatrix"].SetValue(Matrix4.CreateTranslation(new Vector3(72 + 441 / 2f, 0, 0)));
+            Shaders.SineShader["color"].SetValue(Slides.Common.TitleColor);
+            Shaders.SineShader["timeAmplitudeFrequency"].SetValue(new Vector3(t, a, f));
+            Gl.LineWidth(2f);
+            sineLeft.Draw();
         }
     }
 }

@@ -7,6 +7,14 @@ namespace Presentation
 {
     class Program
     {
+        public static Matrix4 uiProjectionMatrix = Matrix4.Identity;
+        private static System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
+        private static List<Slides.Slide> slideList = new List<Slides.Slide>();
+        private static float dt = 0;
+        private static float t = 0;
+        private static int slideNumber = 0;
+        private static Slides.Slide currentSlide;
+
         public static int Width = 1280, Height = 720;
 
         public static bool Fullscreen = false;
@@ -37,8 +45,15 @@ namespace Presentation
             // force a reshape to generate the UI projection matrix
             Window.OnReshape(Program.Width, Program.Height);
 
+            // build slide 1 first
+            slideList.Add(new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics."));
+
             // set to slide 0
             SetSlide(0);
+
+            // render frame 0 so that the program appears responsive while it builds the other slides
+            OnRenderFrame();
+            BuildSlides();
 
             // the main game loop
             while (RunPresentation)
@@ -47,8 +62,6 @@ namespace Presentation
                 Window.HandleEvents();
             }
         }
-
-        public static Matrix4 uiProjectionMatrix = Matrix4.Identity;
 
         public static void OnReshape()
         {
@@ -62,12 +75,11 @@ namespace Presentation
             Shaders.SimpleColoredShader["projectionMatrix"].SetValue(uiProjectionMatrix);
         }
 
-        private static float dt = 0;
-
         private static void OnRenderFrame()
         {
             dt = watch.ElapsedTicks / (float)System.Diagnostics.Stopwatch.Frequency;
             watch.Restart();
+            t += dt;
 
             // clear the screen
             Gl.Viewport(0, 0, Program.Width, Program.Height);
@@ -75,94 +87,39 @@ namespace Presentation
 
             // render the current slide if it exists
             if (currentSlide != null) currentSlide.Draw();
-            RenderSlide();
 
             // swap the buffers
             Window.SwapBuffers();
         }
 
-        private static int slideNumber = 0;
-        private static Slides.ISlide currentSlide;
+        private static void BuildSlides()
+        {
+            // first slide is already built
+            //slideList.Add(new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics."));
+            slideList.Add(new Slides.TitleAndBullets("Sample Bullet Point", new string[] { "Point 1", "More information about something.", "And some more stuff!" }));
+            slideList.Add(new Slides.TitleAndImage("Semiconductor Image", "media/slide3.jpg"));
+            slideList.Add(new Slides.ImageAndText("Bullets on Right", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" }));
+            slideList.Add(new Slides.ImageAndText("Image and Bullets", "media/slide5.jpg", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" }));
 
-        private static Slides.ISlide[] slideList = new Slides.ISlide[256];
+            slideList[3].CustomDraw = () =>
+                {
+                    Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+                    Slides.Common.DrawSineLeft((float)Math.Pow(1.1f, t * 0.5 + 1) - 1.1f);
+                };
+        }
 
         public static void SetSlide(int slide)
         {
             slideNumber = slide;
             t = 0;
 
-            if (slideList[slideNumber] != null)
-            {
-                currentSlide = slideList[slideNumber];
-                return;
-            }
-
-            if (slideNumber == 0)
-            {
-                slideList[slideNumber] = new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics.");
-            }
-            else if (slideNumber == 1)
-            {
-                slideList[slideNumber] = new Slides.TitleAndBullets("Sample Bullet Point", new string[] { "Point 1", "More information about something.", "And some more stuff!" });
-            }
-            else if (slideNumber == 2)
-            {
-                slideList[slideNumber] = new Slides.TitleAndImage("Semiconductor Image", "media/slide3.jpg");
-            }
-            else if (slideNumber == 3)
-            {
-                slideList[slideNumber] = new Slides.ImageAndText("Bullets on Right", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
-            }
-            else if (slideNumber == 4)
-            {
-                slideList[slideNumber] = new Slides.ImageAndText("Image and Bullets", "media/slide5.jpg", new string[] { "Bullet 1", "Bullet 2", "Bullet 3" });
-            }
-
-            currentSlide = slideList[slideNumber];
-        }
-
-        private static VAO<Vector3> sineWave;
-        private static float t = 0;
-        private static System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
-
-        public static void RenderSlide()
-        {
-            t += dt;
-
-            if (slideNumber == 3)
-            {
-                Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
-
-                if (sineWave == null)
-                {
-                    Vector3[] sineArray = new Vector3[441];
-                    int[] elementArray = new int[sineArray.Length];
-                    for (int i = 0; i < sineArray.Length; i++)
-                    {
-                        sineArray[i] = new Vector3(i - 441 / 2f, 288, 0);
-                        elementArray[i] = i;
-                    }
-                    VBO<Vector3> sineListVBO = new VBO<Vector3>(sineArray);
-                    VBO<int> elementListVBO = new VBO<int>(elementArray, BufferTarget.ElementArrayBuffer);
-                    sineWave = new VAO<Vector3>(Shaders.SineShader, sineListVBO, "in_position", elementListVBO);
-                    sineWave.DrawMode = BeginMode.LineStrip;
-                }
-
-                Shaders.SineShader.Use();
-                Shaders.SineShader["projectionMatrix"].SetValue(uiProjectionMatrix);
-                Shaders.SineShader["viewMatrix"].SetValue(Matrix4.Identity);
-                Shaders.SineShader["modelMatrix"].SetValue(Matrix4.CreateTranslation(new Vector3(72 + 441 / 2f, 0, 0)));
-                Shaders.SineShader["color"].SetValue(Slides.Common.TitleColor);
-                Shaders.SineShader["f"].SetValue((float)Math.Pow(1.1f, t * 0.5 + 1) - 1.1f);
-                Shaders.SineShader["a"].SetValue(5f);
-                Gl.LineWidth(2f);
-                sineWave.Draw();
-            }
+            if (slideList[slideNumber] != null) currentSlide = slideList[slideNumber];
+            else currentSlide = null;
         }
 
         public static void NextSlide()
         {
-            SetSlide(Math.Min(slideList.Length - 1, slideNumber + 1));
+            SetSlide(Math.Min(slideList.Count - 1, slideNumber + 1));
         }
 
         public static void PrevSlide()

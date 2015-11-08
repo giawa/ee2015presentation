@@ -210,13 +210,11 @@ uniform mat4 modelMatrix;
 
 attribute vec3 in_position;
 
-uniform float f;
-uniform float t;
-uniform float a;
+uniform vec3 timeAmplitudeFrequency;   // time, amplitude, frequency
 
 void main(void)
 {
-   vec3 position = vec3(in_position.x, 20 * a * sin(in_position.x * f + t) + in_position.y, 0);
+   vec3 position = vec3(in_position.x, timeAmplitudeFrequency.y * sin(in_position.x * timeAmplitudeFrequency.z + timeAmplitudeFrequency.x) + in_position.y, 0);
    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1);
 }";
         #endregion
