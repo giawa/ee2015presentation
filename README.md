@@ -12,4 +12,10 @@ The presentation is set up to emulate a PowerPoint presentation, and uses some e
 If you are the copyright holder of an image, theme or other content of this presentation and do not approve of the use of your content, please submit an issue to this Git repository to have your content removed.  Please provide proof that you are the copyright holder so that the process can be expeditious.
 
 ## Building the Project
-This project includes a .sln and .csproj file.  The /media folder must be moved into the executable directory before launching.
+This project includes a .sln and .csproj file.  The /media folder must be moved into the executable directory before launching.  The contents of /presentation/libs must also be copied to the output directory (specifically the SDL and FFTW compiled libraries).
+
+## Use of Open Source Software
+This project uses a few pieces of open source software, and the project would have been difficult (or impossible) to complete without them!  Here's a list of the open-source software that I used:
+* FFTW - http://www.fftw.org/
+* SDL 2 - https://www.libsdl.org/
+* opengl4csharp - https://github.com/giawa/opengl4csharp
