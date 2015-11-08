@@ -42,6 +42,10 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FilterTools\Biquad.cs" />
+    <Compile Include="FilterTools\FFT.cs" />
+    <Compile Include="FilterTools\FrequencySweep.cs" />
+    <Compile Include="FilterTools\WindowFunction.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

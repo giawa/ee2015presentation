@@ -1,6 +1,7 @@
 ﻿using System;
 
 using OpenGL;
+using System.Runtime.InteropServices;
 
 namespace Presentation.Slides
 {
@@ -113,6 +114,14 @@ namespace Presentation.Slides
             Shaders.SineShader["timeAmplitudeFrequency"].SetValue(new Vector3(t, a, f));
             Gl.LineWidth(2f);
             sineLeft.Draw();
+        }
+
+        public static VBO<Vector3> BufferData(VBO<Vector3> vbo, Vector3[] data, GCHandle handle)
+        {
+            if (vbo == null) return new VBO<Vector3>(data, BufferTarget.ArrayBuffer, BufferUsageHint.StaticDraw);
+            
+            vbo.BufferSubDataPinned(BufferTarget.ArrayBuffer, 12 * data.Length, handle.AddrOfPinnedObject());
+            return vbo;
         }
     }
 }
