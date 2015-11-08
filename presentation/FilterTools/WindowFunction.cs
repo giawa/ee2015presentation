@@ -56,6 +56,21 @@ namespace FilterTools
         /// </summary>
         /// <param name="input">The input array that is oversized.</param>
         /// <param name="reqLength">The required length of the input array.</param>
+        /// <param name="type">The type of window you would like to apply.</param>
+        /// <returns>The output array which is properly sized.</returns>
+        public static double[] ApplyWindowFunction(float[] input, int reqLength, WindowType type)
+        {
+            WindowFunction function = new WindowFunction(type);
+            double[] temp = new double[input.Length];
+            for (int i = 0; i < temp.Length; i++) temp[i] = (double)input[i];
+            return function.ApplyWindowFunction(temp, reqLength);
+        }
+
+        /// <summary>
+        /// Takes the input array and shortens it to the correct value by passing it through a window function.
+        /// </summary>
+        /// <param name="input">The input array that is oversized.</param>
+        /// <param name="reqLength">The required length of the input array.</param>
         /// <returns>The output array which is properly sized.</returns>
         public double[] ApplyWindowFunction(double[] input, int reqLength)
         {

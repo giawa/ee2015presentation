@@ -116,10 +116,61 @@ namespace Presentation.Slides
             sineLeft.Draw();
         }
 
+        private static float[] fft = new float[441];
+
+        public static void DrawFFTLeft(float[] data)
+        {
+            if (data.Length != 882) throw new ArgumentException("The argument data was not the correct length.");
+
+            double[] fftw = FilterTools.fftw.FFTW(FilterTools.WindowFunction.ApplyWindowFunction(data, data.Length, FilterTools.WindowFunction.WindowType.BlackmanHarris));
+            
+            // normalize the FFT to 1
+            double max = 0;
+            for (int i = 0; i < fftw.Length; i++)
+                if (fftw[i] > max) max = fftw[i];
+
+            for (int i = 0; i < fft.Length; i++)
+                fft[i] = (float)(fftw[i] / max);
+
+            DrawPlotLeft(fft, new Vector3(1, 0, 0));
+        }
+
+        private static VAO<Vector3> fftVAO;
+        private static VBO<Vector3> fftVBO;
+        private static Vector3[] fftData = new Vector3[441];
+        private static GCHandle fftHandle;
+
+        public static void DrawPlotLeft(float[] data, Vector3 color)
+        {
+            if (data.Length < 441) throw new ArgumentException("The argument data was not the correct length.");
+
+            for (int i = 0; i < fftData.Length; i++)
+                fftData[i] = new Vector3(i - 441 / 2f, Math.Max(-200, Math.Min(200, 200 * data[i])), 0);
+
+            if (fftVAO == null)
+            {
+                int[] array = new int[441];
+                for (int i = 0; i < array.Length; i++) array[i] = i;
+
+                fftHandle = GCHandle.Alloc(fftData, GCHandleType.Pinned);
+                fftVBO = BufferData(fftVBO, fftData, fftHandle);
+                fftVAO = new VAO<Vector3>(Shaders.SimpleColoredShader, fftVBO, "in_position", new VBO<int>(array, BufferTarget.ElementArrayBuffer, BufferUsageHint.StaticDraw));
+                fftVAO.DrawMode = BeginMode.LineStrip;
+            }
+            else fftVBO = BufferData(fftVBO, fftData, fftHandle);
+
+            Shaders.SimpleColoredShader.Use();
+            Shaders.SimpleColoredShader["projectionMatrix"].SetValue(Program.uiProjectionMatrix);
+            Shaders.SimpleColoredShader["viewMatrix"].SetValue(Matrix4.Identity);
+            Shaders.SimpleColoredShader["modelMatrix"].SetValue(Matrix4.CreateTranslation(new Vector3(72 + 441 / 2f, 288, 0)));
+            Shaders.SimpleColoredShader["color"].SetValue(color);
+            fftVAO.Draw();
+        }
+
         public static VBO<Vector3> BufferData(VBO<Vector3> vbo, Vector3[] data, GCHandle handle)
         {
             if (vbo == null) return new VBO<Vector3>(data, BufferTarget.ArrayBuffer, BufferUsageHint.StaticDraw);
-            
+
             vbo.BufferSubDataPinned(BufferTarget.ArrayBuffer, 12 * data.Length, handle.AddrOfPinnedObject());
             return vbo;
         }
