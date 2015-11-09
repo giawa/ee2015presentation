@@ -144,51 +144,51 @@ namespace Presentation
             slideList.Add(new Slides.ImageWithCaption("Fourier Series", "Heat equation is difficult to solve, but sin and cos solutions are well understood!", "media/slide18.jpg"));
             slideList.Add(new Slides.ImageWithCaption("Fourier Series", "Would it be possible to approximate an arbitrary signal with sin and cos?", "media/slide18.jpg"));
 
-            slideList.Add(new Slides.ImageAndText("Fourier Example #1", new string[] { "Lets approximate a sine wave" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #1", new string[] { "Let's approximate a sine wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries1();
-            slideList.Add(new Slides.ImageAndText("Fourier Example #1", new string[] { "Lets approximate a sine wave", "Ok - that's easy" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #1", new string[] { "Let's approximate a sine wave", "Ok - that's easy" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries1(true);
 
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2();
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave", "First sine wave (fundamental)" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave", "First sine wave (fundamental)" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2(1);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2(2);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "3 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "3 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2(3);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "5 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "5 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2(5);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "10 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "10 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2(10);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Lets approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "50 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #2", new string[] { "Let's approximate a square wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "50 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries2(50);
 
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3();
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(1);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(2);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "3 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "3 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(3);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "5 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "5 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(5);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "10 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "10 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(10);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "50 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "50 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(50);
-            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Lets approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "100 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Example #3", new string[] { "Let's approximate a sawtooth wave", "First sine wave (fundamental)", "Next sine wave (harmonic)", "100 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierSeries3(100);
 
             // fourier transform (slide 38)
-            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Lets go back to the square wave", "50 sine waves" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Let's go back to the square wave", "50 sine waves" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(0f, true);
-            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Lets go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Let's go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(0f, false);
-            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Lets go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Let's go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(t);
-            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Lets go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Let's go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(10f, false, true);
         }
 
