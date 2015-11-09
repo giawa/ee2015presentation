@@ -53,6 +53,7 @@
     <Compile Include="Shaders.cs" />
     <Compile Include="Slides\Common.cs" />
     <Compile Include="Slides\ImageAndText.cs" />
+    <Compile Include="Slides\ImageWithCaption.cs" />
     <Compile Include="Slides\TitleAndBullets.cs" />
     <Compile Include="Slides\TitleAndImage.cs" />
     <Compile Include="Slides\TitleSlide.cs" />

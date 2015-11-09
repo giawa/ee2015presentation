@@ -9,6 +9,13 @@ namespace Presentation.Slides
     {
         public Action CustomDraw { get; set; }
 
+        public bool ResetTime { get; set; }
+
+        public Slide()
+        {
+            ResetTime = true;
+        }
+
         public virtual void Draw()
         {
             if (CustomDraw != null) CustomDraw();
@@ -28,6 +35,7 @@ namespace Presentation.Slides
 
         public static VAO BoxQuad;
         public static VAO CrosshairVAO;
+        public static VAO StencilQuad;
 
         public static void Init()
         {
@@ -41,8 +49,12 @@ namespace Presentation.Slides
             BoxQuad = new VAO(Shaders.SimpleColoredShader, vertices, indices);
             BoxQuad.DrawMode = BeginMode.LineStrip;
 
-            vertices = new VBO<Vector3>(new Vector3[] { new Vector3(0.5, -0.01, 0), new Vector3(0.5, 1.01, 0), new Vector3(-0.01, 0.5, 0), new Vector3(1.01, 0.5, 0) });
             indices = new VBO<int>(new int[] { 0, 1, 2, 3 }, BufferTarget.ElementArrayBuffer);
+            StencilQuad = new VAO(Shaders.SimpleColoredShader, vertices, indices);
+            StencilQuad.DrawMode = BeginMode.Quads;
+
+            vertices = new VBO<Vector3>(new Vector3[] { new Vector3(0.5, -0.01, 0), new Vector3(0.5, 1.01, 0), new Vector3(-0.01, 0.5, 0), new Vector3(1.01, 0.5, 0) });
+            indices = new VBO<int>(new int[] { 2, 3, 0, 1 }, BufferTarget.ElementArrayBuffer);
             CrosshairVAO = new VAO(Shaders.SimpleColoredShader, vertices, indices);
             CrosshairVAO.DrawMode = BeginMode.Lines;
 
@@ -76,6 +88,7 @@ namespace Presentation.Slides
         {
             Shaders.SimpleColoredShader.Use();
             Shaders.SimpleColoredShader["modelMatrix"].SetValue(modelMatrix);
+            Shaders.SimpleColoredShader["viewMatrix"].SetValue(Matrix4.Identity);
             Shaders.SimpleColoredShader["color"].SetValue(color);
             BoxQuad.Draw();
         }
@@ -87,9 +100,39 @@ namespace Presentation.Slides
             CrosshairVAO.Draw();
         }
 
+        public static void DrawXPlotter(Matrix4 modelMatrix)
+        {
+            DrawBox(modelMatrix, SubtitleColor);
+            Shaders.SimpleColoredShader["color"].SetValue(TextColor);
+
+            CrosshairVAO.VertexCount = 2;
+            CrosshairVAO.Draw();
+            CrosshairVAO.VertexCount = 4;
+        }
+
+        public static void EnableStencil(Matrix4 modelMatrix)
+        {
+            // draw an outline around the chunk
+            Gl.ClearStencil(0);
+            Gl.Clear(ClearBufferMask.StencilBufferBit);
+            Gl.Enable(EnableCap.StencilTest);
+
+            Gl.StencilFunc(StencilFunction.Always, 1, 0xFFFF);
+            Gl.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+
+            Gl.ColorMask(false, false, false, false);
+
+            Shaders.SimpleColoredShader.Use();
+            Shaders.SimpleColoredShader["modelMatrix"].SetValue(modelMatrix);
+            Shaders.SimpleColoredShader["viewMatrix"].SetValue(Matrix4.Identity);
+            StencilQuad.Draw();
+
+            Gl.ColorMask(true, true, true, true);
+        }
+
         private static VAO<Vector3> sineLeft;
 
-        public static void DrawSineLeft(float f, float a = 100f, float t = 0f)
+        public static void DrawSineLeft(Vector3 color, float f, float a = 100f, float t = 0f)
         {
             if (sineLeft == null)
             {
@@ -110,7 +153,7 @@ namespace Presentation.Slides
             Shaders.SineShader["projectionMatrix"].SetValue(Program.uiProjectionMatrix);
             Shaders.SineShader["viewMatrix"].SetValue(Matrix4.Identity);
             Shaders.SineShader["modelMatrix"].SetValue(Matrix4.CreateTranslation(new Vector3(72 + 441 / 2f, 0, 0)));
-            Shaders.SineShader["color"].SetValue(Slides.Common.TitleColor);
+            Shaders.SineShader["color"].SetValue(color);
             Shaders.SineShader["timeAmplitudeFrequency"].SetValue(new Vector3(t, a, f));
             Gl.LineWidth(2f);
             sineLeft.Draw();
@@ -142,10 +185,15 @@ namespace Presentation.Slides
 
         public static void DrawPlotLeft(float[] data, Vector3 color)
         {
+            Draw3DPlotLeft(data, 0, color, Matrix4.Identity);
+        }
+
+        public static void Draw3DPlotLeft(float[] data, float depth, Vector3 color, Matrix4 viewMatrix)
+        {
             if (data.Length < 441) throw new ArgumentException("The argument data was not the correct length.");
 
             for (int i = 0; i < fftData.Length; i++)
-                fftData[i] = new Vector3(i - 441 / 2f, Math.Max(-200, Math.Min(200, 200 * data[i])), 0);
+                fftData[i] = new Vector3(i - 441 / 2f, Math.Max(-200, Math.Min(200, 200 * data[i])), depth);
 
             if (fftVAO == null)
             {
@@ -161,7 +209,7 @@ namespace Presentation.Slides
 
             Shaders.SimpleColoredShader.Use();
             Shaders.SimpleColoredShader["projectionMatrix"].SetValue(Program.uiProjectionMatrix);
-            Shaders.SimpleColoredShader["viewMatrix"].SetValue(Matrix4.Identity);
+            Shaders.SimpleColoredShader["viewMatrix"].SetValue(viewMatrix);
             Shaders.SimpleColoredShader["modelMatrix"].SetValue(Matrix4.CreateTranslation(new Vector3(72 + 441 / 2f, 288, 0)));
             Shaders.SimpleColoredShader["color"].SetValue(color);
             fftVAO.Draw();
