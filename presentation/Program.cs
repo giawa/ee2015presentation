@@ -50,7 +50,7 @@ namespace Presentation
             slideList.Add(new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics."));
 
             // set to slide 0
-            SetSlide(30);
+            SetSlide(42);
 
             // render frame 0 so that the program appears responsive while it builds the other slides
             OnRenderFrame();
@@ -91,6 +91,50 @@ namespace Presentation
 
             // swap the buffers
             Window.SwapBuffers();
+        }
+
+        private static NAudio.Wave.WaveInEvent sourceStream = null;
+
+        private static void StartAudioDevice()
+        {
+            List<NAudio.Wave.WaveInCapabilities> sources = new List<NAudio.Wave.WaveInCapabilities>();
+
+            for (int i = 0; i < NAudio.Wave.WaveIn.DeviceCount; i++)
+            {
+                sources.Add(NAudio.Wave.WaveIn.GetCapabilities(i));
+            }
+
+            sourceStream = new NAudio.Wave.WaveInEvent();
+            sourceStream.DeviceNumber = 0;
+            sourceStream.WaveFormat = new NAudio.Wave.WaveFormat(44100, NAudio.Wave.WaveIn.GetCapabilities(0).Channels);
+            sourceStream.StartRecording();
+            sourceStream.DataAvailable += sourceStream_DataAvailable;
+        }
+
+        private static object audioLock = new object();
+        private static float[] audioData = new float[882];
+        private static short[] audioTemp = new short[882];
+
+        private static void sourceStream_DataAvailable(object sender, NAudio.Wave.WaveInEventArgs e)
+        {
+            if (e.BytesRecorded < (882 * 2)) return;
+            Buffer.BlockCopy(e.Buffer, 0, audioTemp, 0, 882 * 2);
+
+            lock (audioLock)
+            {
+                for (int i = 0; i < 882; i++)
+                    audioData[i] = audioTemp[i] / 32768f;
+            }
+        }
+
+        private static void StopAudioDevice()
+        {
+            if (sourceStream != null)
+            {
+                sourceStream.StopRecording();
+                sourceStream.Dispose();
+            }
+            sourceStream = null;
         }
 
         private static void BuildSlides()
@@ -190,6 +234,10 @@ namespace Presentation
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(t);
             slideList.Add(new Slides.ImageAndText("Fourier Transform Example", new string[] { "Let's go back to the square wave", "50 sine waves", "Add depth to each sine wave" }));
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(10f, false, true);
+
+            // fourier transform of mic (slide 42)
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Real-Time", new string[] { "Perform FFT on data buffer", "Data buffer is captured via the mic" }));
+            slideList[slideList.Count - 1].CustomDraw = () => FourierTransformMic();
         }
 
         public static void SetSlide(int slide)
@@ -369,6 +417,8 @@ namespace Presentation
 
         private static void FourierTransformExample(float transformation, bool drawSquare = false, bool drawAbs = false)
         {
+            StopAudioDevice();
+
             if (transformation >= 9.99f) transformation = 9.99f;
             transformation /= 10;
 
@@ -440,6 +490,18 @@ namespace Presentation
                 return c / 2 * t * t * t + b;
 
             return c / 2 * ((t -= 2) * t * t + 2) + b;
+        }
+
+        private static void FourierTransformMic()
+        {
+            if (sourceStream == null) StartAudioDevice();
+
+            Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+            lock (audioLock)
+            {
+                //Slides.Common.DrawPlotLeft(audioData, new Vector3(1, 0, 0));
+                Slides.Common.DrawFFTLeft(audioData);
+            }
         }
         #endregion
     }

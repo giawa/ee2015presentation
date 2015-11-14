@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NAudio">
+      <HintPath>libs\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="OpenGL">
       <HintPath>libs\OpenGL.dll</HintPath>
     </Reference>

@@ -168,14 +168,14 @@ namespace Presentation.Slides
             double[] fftw = FilterTools.fftw.FFTW(FilterTools.WindowFunction.ApplyWindowFunction(data, data.Length, FilterTools.WindowFunction.WindowType.BlackmanHarris));
             
             // normalize the FFT to 1
-            double max = 0;
-            for (int i = 0; i < fftw.Length; i++)
-                if (fftw[i] > max) max = fftw[i];
+            double max = 20;
+            /*for (int i = 0; i < fftw.Length; i++)
+                if (fftw[i] > max) max = fftw[i];*/
 
             for (int i = 0; i < fft.Length; i++)
                 fft[i] = (float)(fftw[i] / max);
 
-            DrawPlotLeft(fft, new Vector3(1, 0, 0));
+            DrawPlotLeft(fft, new Vector3(1, 0, 0), true);
         }
 
         private static VAO<Vector3> fftVAO;
@@ -183,17 +183,18 @@ namespace Presentation.Slides
         private static Vector3[] fftData = new Vector3[441];
         private static GCHandle fftHandle;
 
-        public static void DrawPlotLeft(float[] data, Vector3 color)
+        public static void DrawPlotLeft(float[] data, Vector3 color, bool log = false)
         {
-            Draw3DPlotLeft(data, 0, color, Matrix4.Identity);
+            Draw3DPlotLeft(data, 0, color, Matrix4.Identity, log);
         }
 
-        public static void Draw3DPlotLeft(float[] data, float depth, Vector3 color, Matrix4 viewMatrix)
+        public static void Draw3DPlotLeft(float[] data, float depth, Vector3 color, Matrix4 viewMatrix, bool log = false)
         {
             if (data.Length < 441) throw new ArgumentException("The argument data was not the correct length.");
 
             for (int i = 0; i < fftData.Length; i++)
-                fftData[i] = new Vector3(i - 441 / 2f, Math.Max(-200, Math.Min(200, 200 * data[i])), depth);
+                fftData[i] = new Vector3((log ? Math.Log10(i) * 166 : i) - 441 / 2f, Math.Max(-200, Math.Min(200, 200 * data[i])), depth);
+                //fftData[i] = new Vector3(i - 441 / 2f, Math.Max(-200, Math.Min(200, 200 * data[i])), depth);
 
             if (fftVAO == null)
             {
