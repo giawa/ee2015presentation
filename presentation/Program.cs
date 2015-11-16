@@ -33,6 +33,7 @@ namespace Presentation
             Gl.Enable(EnableCap.CullFace);
             Gl.Enable(EnableCap.Blend);
             Gl.Enable(EnableCap.Multisample);
+            Gl.LineWidth(2f);
 
             // set up the blending mode for ground clutter
             Gl.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -50,7 +51,7 @@ namespace Presentation
             slideList.Add(new Slides.TitleSlide("2015 Presentation", "Exporation of cool electrical engineering topics."));
 
             // set to slide 0
-            SetSlide(42);
+            SetSlide(44);
 
             // render frame 0 so that the program appears responsive while it builds the other slides
             OnRenderFrame();
@@ -236,8 +237,31 @@ namespace Presentation
             slideList[slideList.Count - 1].CustomDraw = () => FourierTransformExample(10f, false, true);
 
             // fourier transform of mic (slide 42)
-            slideList.Add(new Slides.ImageAndText("Fourier Transform Real-Time", new string[] { "Perform FFT on data buffer", "Data buffer is captured via the mic" }));
-            slideList[slideList.Count - 1].CustomDraw = () => FourierTransformMic();
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Real-Time", new string[] { "Data buffer is captured via the mic" }));
+            slideList[slideList.Count - 1].CustomDraw = () => FourierTransformMic(false);
+            slideList.Add(new Slides.ImageAndText("Fourier Transform Real-Time", new string[] { "Data buffer is captured via the mic", "Perform FFT on data buffer" }));
+            slideList[slideList.Count - 1].CustomDraw = () => FourierTransformMic(true);
+
+            // oversampling (slide 44)
+            slideList.Add(new Slides.ImageAndText("Oversampling", new string[] { "Let's build a sample rate converter" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter();
+            slideList.Add(new Slides.ImageAndText("Oversampling", new string[] { "Let's build a sample rate converter", "Take audio (44.1kS/s) up to 176.4kS/s" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(true);
+            slideList.Add(new Slides.ImageAndText("Oversampling", new string[] { "Let's build a sample rate converter", "Take audio (44.1kS/s) up to 176.4kS/s", "Use sample and hold method" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(true, true);
+
+            slideList.Add(new Slides.ImageAndText("Oversampling Artifacts", new string[] { "How do we get rid of that stair step?" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(true, true);
+            slideList.Add(new Slides.ImageAndText("Oversampling Artifacts", new string[] { "How do we get rid of that stair step?", "Visualize with FFT" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(false, true, true);
+            slideList.Add(new Slides.ImageAndText("Oversampling Artifacts", new string[] { "How do we get rid of that stair step?", "Visualize with FFT", "All of those higher frequencies are artifacts" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(false, true, true);
+            slideList.Add(new Slides.ImageAndText("Oversampling Artifacts", new string[] { "How do we get rid of that stair step?", "Visualize with FFT", "All of those higher frequencies are artifacts", "How do we get rid of them?" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(false, true, true);
+            slideList.Add(new Slides.ImageAndText("Oversampling Artifacts", new string[] { "How do we get rid of that stair step?", "Visualize with FFT", "All of those higher frequencies are artifacts", "How do we get rid of them?", "Filter it!" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(false, true, true, true);
+            slideList.Add(new Slides.ImageAndText("Oversampling Artifacts", new string[] { "How do we get rid of that stair step?", "Visualize with FFT", "All of those higher frequencies are artifacts", "How do we get rid of them?", "Filter it!" }));
+            slideList[slideList.Count - 1].CustomDraw = () => SampleRateConverter(true, true, false, true);
         }
 
         public static void SetSlide(int slide)
@@ -350,7 +374,6 @@ namespace Presentation
         private static void FourierSeries2(int sineWaves = 0)
         {
             Gl.Disable(EnableCap.DepthTest);
-            Gl.LineWidth(2f);
             Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
 
             float[] squareWave = new float[441];
@@ -383,7 +406,6 @@ namespace Presentation
         private static void FourierSeries3(int sineWaves = 0)
         {
             Gl.Disable(EnableCap.DepthTest);
-            Gl.LineWidth(2f);
             Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
 
             float[] squareWave = new float[441];
@@ -433,7 +455,6 @@ namespace Presentation
 
             // draw the plotter frame
             Gl.Disable(EnableCap.DepthTest);
-            Gl.LineWidth(2f);
 
             if (transformation == 0) Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
             else if (transformation >= 0.95)
@@ -492,15 +513,66 @@ namespace Presentation
             return c / 2 * ((t -= 2) * t * t + 2) + b;
         }
 
-        private static void FourierTransformMic()
+        private static void FourierTransformMic(bool fft)
         {
             if (sourceStream == null) StartAudioDevice();
 
             Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
             lock (audioLock)
             {
-                //Slides.Common.DrawPlotLeft(audioData, new Vector3(1, 0, 0));
-                Slides.Common.DrawFFTLeft(audioData);
+                if (fft) Slides.Common.DrawFFTLeft(audioData);
+                else Slides.Common.DrawPlotLeft(audioData, new Vector3(0, 0, 1));
+            }
+        }
+
+        private static void SampleRateConverter(bool oversamples = false, bool sampleAndHold = false, bool fftStairStep = false, bool filter = false)
+        {
+            // the previous slide uses the audio device, so lets disable it
+            StopAudioDevice();
+
+            // build a sine wave to use for this example
+            float[] sine = new float[882 * 4];
+            for (int i = 0; i < sine.Length; i++)
+                sine[i] = (fftStairStep ? 0.1f : 0.5f) * (float)Math.Sin((i - 441 / 2) * 0.06);
+
+            // build a low pass filter to use if we are filtering the samples sine wave
+            FilterTools.BiQuad lpf = new FilterTools.BiQuad(18000, 0.707, 44100 * 4, 0, FilterTools.BiQuad.Type.LPF);
+            lpf.Child = (FilterTools.BiQuad)lpf.Clone();
+            lpf.Load(sine[0]);  // get the initial DC value from the filter
+
+            // draw the plotter and the sine wave (if required)
+            Slides.Common.DrawPlotter(Utilities.FastMatrix4(new Vector3(72, 720 - 227 - 410, 0), new Vector3(441, 410, 1)));
+            if (!fftStairStep) Slides.Common.DrawPlotLeft(sine, Slides.Common.TitleColor);
+
+            // build two sample buffers, one for 1x and one for 4x sampling
+            float[] samples1 = new float[sine.Length];
+            float[] samples2 = new float[sine.Length];
+            for (int i = 0; i < sine.Length; i++)
+            {
+                if (sampleAndHold)
+                {
+                    samples1[i] = (filter ? (i % 4 == 0 ? (float)lpf.GetOutput(sine[(i / 16) * 16]) : samples1[(i / 4) * 4]) : sine[(i / 16) * 16]);
+                    samples2[i] = sine[(i / 16) * 16];
+                }
+                else
+                {
+                    if ((i % 16) == 0) samples1[i] = sine[i];
+                    if ((i % 4) == 0) samples2[i] = sine[i];
+                }
+            }
+
+            if (fftStairStep)
+            {
+                // FFT the samples1 data (which is either sample and hold or filtered data)
+                float[] fft = new float[882];
+                for (int i = 0; i < fft.Length; i++) fft[i] = samples1[i * 4];
+                Slides.Common.DrawFFTLeft(fft);
+            }
+            else
+            {
+                // draw the two types of sampled or filtered data
+                Slides.Common.DrawPlotLeft(samples1, new Vector3(1, 0, 0));
+                if (oversamples) Slides.Common.DrawPlotLeft(samples2, new Vector3(0, 1, 0));
             }
         }
         #endregion
