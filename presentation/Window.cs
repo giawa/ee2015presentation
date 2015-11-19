@@ -65,6 +65,9 @@ namespace Presentation
                 return;
             }
 
+            // apply vertical sync
+            ApplyVerticalSync();
+
             // initialize the screen to black as soon as possible
             Gl.ClearColor(0f, 0f, 0f, 1f);
             Gl.Clear(ClearBufferMask.ColorBufferBit);
@@ -102,6 +105,16 @@ namespace Presentation
             }
 
             OnReshape(Program.Width, Program.Height);
+        }
+
+        public static void ApplyVerticalSync()
+        {
+            // set the swap interval (v-sync)
+            IntPtr address = Gl.GetAddress("wglSwapIntervalEXT");
+            if (address != IntPtr.Zero && address != (IntPtr)1 && address != (IntPtr)2)
+                NativeMethods.wglSwapInterval = (NativeMethods.wglSwapIntervalEXT)Marshal.GetDelegateForFunctionPointer(address, typeof(NativeMethods.wglSwapIntervalEXT));
+            if (NativeMethods.wglSwapInterval != null)
+                NativeMethods.wglSwapInterval(1);
         }
         #endregion
 
